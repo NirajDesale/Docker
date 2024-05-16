@@ -1,80 +1,71 @@
 trigger:
-- main
-
+  - main
 resources:
-- repo: self
-
+  - repo: self
 variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'afa8316f-0c20-4efa-afa6-4e58bc281891'
-  imageRepository: 'nirajdesaledocker'
-  containerRegistry: 'tutorialwebsite.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/myapp/Dockerfile.dev'
-  tag: '$(Build.BuildId)'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  dockerRegistryServiceConnection: afa8316f-0c20-4efa-afa6-4e58bc281891
+  imageRepository: nirajdesaledocker
+  containerRegistry: tutorialwebsite.azurecr.io
+  dockerfilePath: $(Build.SourcesDirectory)/myapp/Dockerfile.dev
+  tag: $(Build.BuildId)
+  vmImageName: ubuntu-latest
   System.Debug: true
-
 stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:
-  - job: Build
-    displayName: Build and push Docker image
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      displayName: Build and push Docker image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-
-- stage: Deploy
-  displayName: Deploy Helm chart
-  jobs:
-  - job: Deploy
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build and push Docker image
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: Build and push Docker image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: $(Build.SourcesDirectory)/myapp
+              artifact: dockerImage
+  - stage: Deploy
     displayName: Deploy Helm chart
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: HelmInstaller@0
-      displayName: Install Helm 2.9.1
-      inputs:
-        helmVersion: 2.9.1
-        kubectlVersion: 1.10.3
-        checkLatestKubectl: false
-
-    - task: HelmDeploy@0
-      displayName: Package Helm chart
-      inputs:
-        command: package
-        chartPath: helm
-        save: false
-
-    # - task: HelmDeploy@0
-    #   displayName: Upgrade Helm chart
-    #   inputs:
-    #     connectionType: 'Azure Resource Manager'
-    #     azureSubscription: '76da5e4e-76f2-427d-8a31-9e244a3b47bc'
-    #     azureResourceGroup: 'RG-NirajDesale'
-    #     kubernetesCluster: 'releaseMyapp'
-    #     namespace: default
-    #     command: upgrade
-    #     chartType: FilePath
-    #     chartPath: ''
-    - task: HelmDeploy@0
-      inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
-        azureResourceGroup: 'RG-NirajDesale'
-        kubernetesCluster: 'releaseMyapp'
-        namespace: 'default'
-        command: 'upgrade'
-        chartType: 'FilePath'
-        chartPath: '$(System.DefaultWorkingDirectory)/_Tutorial-Azure Kubernetes Service -CI/drop/helm-*.tgz'
-        releaseName: 'helmcicd'
-    #     releaseName: helmcicd 
+    jobs:
+      - job: Deploy
+        displayName: Deploy Helm chart
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: HelmInstaller@0
+            displayName: Install Helm 2.9.1
+            inputs:
+              helmVersion: 2.9.1
+              kubectlVersion: 1.10.3
+              checkLatestKubectl: false
+          - task: HelmDeploy@0
+            displayName: Package Helm chart
+            inputs:
+              command: package
+              chartPath: helm
+              save: false
+          - task: HelmDeploy@0
+            inputs:
+              connectionType: Azure Resource Manager
+              azureSubscription: M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)
+              azureResourceGroup: RG-NirajDesale
+              kubernetesCluster: releaseMyapp
+              namespace: default
+              command: upgrade
+              chartType: FilePath
+              chartPath: >-
+                $(System.DefaultWorkingDirectory)/_Tutorial-Azure Kubernetes
+                Service -CI/drop/helm-*.tgz
+              releaseName: helmcicd
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: >-
+                $(System.DefaultWorkingDirectory)/_Tutorial-Azure Kubernetes
+                Service -CI/drop
+              artifact: helmChart
