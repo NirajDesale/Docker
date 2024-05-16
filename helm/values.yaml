@@ -8,7 +8,7 @@ image:
   repository: tutorialwebsite.azurecr.io/nirajdesaledocker
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "50"
 
 imagePullSecrets: []
 nameOverride: ""
