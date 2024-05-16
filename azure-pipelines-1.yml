@@ -55,15 +55,26 @@ stages:
         chartPath: helm
         save: false
 
+    # - task: HelmDeploy@0
+    #   displayName: Upgrade Helm chart
+    #   inputs:
+    #     connectionType: 'Azure Resource Manager'
+    #     azureSubscription: '76da5e4e-76f2-427d-8a31-9e244a3b47bc'
+    #     azureResourceGroup: 'RG-NirajDesale'
+    #     kubernetesCluster: 'releaseMyapp'
+    #     namespace: default
+    #     command: upgrade
+    #     chartType: FilePath
+    #     chartPath: ''
     - task: HelmDeploy@0
-      displayName: Upgrade Helm chart
       inputs:
         connectionType: 'Azure Resource Manager'
-        azureSubscription: '76da5e4e-76f2-427d-8a31-9e244a3b47bc'
+        azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
         azureResourceGroup: 'RG-NirajDesale'
         kubernetesCluster: 'releaseMyapp'
-        namespace: default
-        command: upgrade
-        chartType: FilePath
+        namespace: 'default'
+        command: 'upgrade'
+        chartType: 'FilePath'
         chartPath: '$(System.DefaultWorkingDirectory)/_Tutorial-Azure Kubernetes Service -CI/drop/helm-*.tgz'
-        releaseName: helmcicd 
+        releaseName: 'helmcicd'
+    #     releaseName: helmcicd 
