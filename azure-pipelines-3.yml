@@ -43,12 +43,8 @@ stages:
         installKubectl: true
     - task: HelmDeploy@0
       inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
-        azureResourceGroup: 'RG-NirajDesale'
-        kubernetesCluster: 'releaseMyapp'
-        namespace: 'default'
-        command: 'ls'
+        command: 'package'
+
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Pipeline.Workspace)'
