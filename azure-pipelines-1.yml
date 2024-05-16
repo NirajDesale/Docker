@@ -52,17 +52,15 @@ stages:
               save: false
           - task: HelmDeploy@0
             inputs:
-              connectionType: Azure Resource Manager
-              azureSubscription: M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)
-              azureResourceGroup: RG-NirajDesale
-              kubernetesCluster: releaseMyapp
-              namespace: default
-              command: upgrade
-              chartType: FilePath
-              chartPath: >-
-                $(System.DefaultWorkingDirectory)/_Tutorial-Azure Kubernetes
-                Service -CI/drop/helm-*.tgz
-              releaseName: helmcicd
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
+              azureResourceGroup: 'RG-NirajDesale'
+              kubernetesCluster: 'releaseMyapp'
+              namespace: 'default'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(Build.ArtifactStagingDirectory)/helm-*.tgz'
+              releaseName: 'helmcicd'
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: >-
