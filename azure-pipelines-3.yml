@@ -54,10 +54,14 @@ stages:
       inputs:
         connectionType: 'Azure Resource Manager'
         azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscription: 'M0064 (86976333-f47a-4a7e-aaf4-9bf9f22d07f7)'
         azureResourceGroup: 'RG-NirajDesale'
         kubernetesCluster: 'releaseMyapp'
         namespace: 'default'
         command: 'upgrade'
         chartType: 'FilePath'
-        chartPath: '$(Build.ArtifactStagingDirectory)/helm-$(Build.BuildId).tgz'
-        releaseName: 'helmrelease'
+        chartPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).tgz'
