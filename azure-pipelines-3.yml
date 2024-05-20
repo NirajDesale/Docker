@@ -46,12 +46,17 @@ stages:
     - task: HelmDeploy@0
       inputs:
         command: 'package'
-
-    - task: PublishPipelineArtifact@1
+    - task: PublishBuildArtifacts@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
-        artifact: 'helmArtifact'
-        publishLocation: 'pipeline'
+       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+       ArtifactName: 'drop'
+       publishLocation: 'Container'      
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Azure Resource Manager'
@@ -61,4 +66,5 @@ stages:
         namespace: 'default'
         command: 'upgrade'
         chartType: 'FilePath'
-        chartPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).tgz'
+        chartPath: '$(Build.ArtifactStagingDirectory)/helm-$(Build.BuildId).tgz'
+        releaseName: 'helmrelease'
